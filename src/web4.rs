@@ -1,5 +1,7 @@
 use crate::*;
+extern crate chrono;
 
+use chrono::prelude::*;
 use near_sdk::json_types::Base64VecU8;
 use near_sdk::{env};
 use std::collections::HashMap;
@@ -80,33 +82,31 @@ impl Contract {
             return Web4Response::plain_response("User-agent: *\nDisallow:".to_string());
         }
 
-        if path == "/register" {
+        if path == "/new" {
             return Web4Response::html_response(
-                include_str!("../res/register.html")
+                include_str!("../res/new.html")
                     .replace("%STYLESHEET%", &STYLES_BODY)
                     .replace("%CONTRACT_ID%", &env::current_account_id().to_string())
-                    .replace("%NETWORK%", "mainnet")
+                    .replace("%NETWORK%", "testnet")
             );
         }
 
-        let mut app_html = "".to_string();
-        for (account_id, application_data) in self.get_applications() {
-            if let Some(application_data) = application_data {
-                app_html = format!("{}<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>", &app_html,
-                                    account_id.to_string(),
-                                    application_data.description,
-                                    application_data.github_url,
-                                    application_data.contract_id,
-                                    application_data.youtube_url.unwrap_or_default(),
-                                    application_data.contact_data
+        let mut post_html = "".to_string();
+        for post in self.get_posts().iter().rev() {
+            if let post = post {
+                post_html = format!("{}<div class='data'><p><strong>{}</strong></p><p>{}</p><p><i>by <span>{}</span> on <span>{}</span></i></p></div>", &post_html,
+                    post.1.title,
+                    post.1.text,
+                    post.1.author,
+                    NaiveDateTime::from_timestamp(post.1.created_at as i64/1000000000, 0),
                 );
             }
-        }
+        };
 
         Web4Response::html_response(
             include_str!("../res/index.html")
                 .replace("%STYLESHEET%", &STYLES_BODY)
-                .replace("%APPLICATIONS%", &app_html)
+                .replace("%POSTS%", &post_html)
         )
 
     }

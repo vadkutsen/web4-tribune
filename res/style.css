@@ -14,7 +14,10 @@
 }
 
 html {
-    font-family: "Outfit", sans-serif;
+    font-family: 'Special Elite', cursive;
+    /* font-family: Avenir, Helvetica, Arial, sans-serif; */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 body {
@@ -88,7 +91,7 @@ h2 {
     padding-bottom:20px;
 }
 
-.register {
+.add-post {
     padding: 10px;
     background-color: var(--blue-yonder)
 }

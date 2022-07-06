@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Web4 Tribune</title>
+
+    <meta name="og:title" content="Web4 Tribune" />
+    <meta name="og:description" content="Web4 Tribune" />
+
+    <link
+      href="https://fonts.googleapis.com/css?family=Outfit:100,200,300,regular,500,600,700,800,900"
+      rel="stylesheet"
+    />
+
+    <style>
+      %STYLESHEET%
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/near-api-js@0.41.0/dist/near-api-js.min.js"></script>
+    <script>
+      const near = new nearApi.Near({
+        keyStore: new nearApi.keyStores.BrowserLocalStorageKeyStore(),
+        networkId: "%NETWORK%",
+        nodeUrl: "https://rpc.testnet.near.org",
+        walletUrl: "https://wallet.testnet.near.org",
+      });
+      const wallet = new nearApi.WalletConnection(near, "web4-tribune");
+      const account = wallet.getAccountId();
+
+      window.addEventListener("load", function () {
+        const form = document.getElementById("new");
+
+        form.addEventListener("submit", function (event) {
+          event.preventDefault();
+
+          fetch("https://rest.nearapi.org/sign_url", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              account_id: account,
+              method: "add_post",
+              params: {
+                title: document.getElementById("title").value,
+                text: document.getElementById("text").value,
+              },
+              deposit: 0,
+              gas: "20000000000000",
+              receiver_id: "%CONTRACT_ID%",
+              meta: "",
+              callback_url: "https://%CONTRACT_ID%.page",
+              network: "%NETWORK%",
+            }),
+          })
+            .then((resp) => resp.text())
+            .then((url) => {
+              console.log("Redirecting to: ", url);
+              window.location.replace(url);
+            });
+        });
+      });
+    </script>
+  </head>
+
+  <body>
+    <div class="data">
+      <h2>Add new post</h2>
+      <div style="text-align: initial">
+        <form id="new">
+          <p>
+            <label for="title">Title*:</label>
+            <input type="text" value="" id="title" />
+          </p>
+          <p>
+            <label for="text">Text*:</label>
+            <textarea type="text" value="" id="text"></textarea>
+          </p>
+          <input type="submit" style="padding: 10px" />
+        </form>
+      </div>
+    </div>
+  </body>
+</html>
