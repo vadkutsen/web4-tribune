@@ -119,14 +119,4 @@ impl Contract {
     pub fn get_tips(&self, author_id: AccountId) -> u128 {
         self.tips.get(&author_id).unwrap_or(0)
     }
-
-    pub fn register(&mut self, application: Option<ApplicationData>) {
-        assert!(env::block_timestamp() <= 1657864800000000000, "ERR_TO_LATE");
-        self.applications
-            .insert(&env::predecessor_account_id(), &application);
-    }
-
-    pub fn get_applications(&self) -> Vec<(AccountId, Option<ApplicationData>)> {
-        unordered_map_pagination(&self.applications, None, None)
-    }
 }

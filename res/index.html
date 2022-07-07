@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Web4 Tribune</title>
 
-    <meta name="og:title" content="Web4 Tribune" />
-    <meta name="og:description" content="Web4 Tribune" />
+    <meta name="og:title" content="Web4-Tribune" />
+    <meta name="og:description" content="Web4-Tribune" />
 
     <link
       href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap"
@@ -17,18 +17,6 @@
     <style>
       %STYLESHEET%
     </style>
-
-    <script src="https://cdn.jsdelivr.net/npm/near-api-js@0.41.0/dist/near-api-js.min.js"></script>
-    <script>
-      const near = new nearApi.Near({
-        keyStore: new nearApi.keyStores.BrowserLocalStorageKeyStore(),
-        networkId: "%NETWORK%",
-        nodeUrl: "https://rpc.testnet.near.org",
-        walletUrl: "https://wallet.testnet.near.org",
-      });
-      const wallet = new nearApi.WalletConnection(near, "web4-tribune");
-      const account = wallet.getAccountId();
-    </script>
   </head>
 
   <body>

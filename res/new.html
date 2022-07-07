@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Web4 Tribune</title>
 
-    <meta name="og:title" content="Web4 Tribune" />
-    <meta name="og:description" content="Web4 Tribune" />
+    <meta name="og:title" content="Web4-Tribune" />
+    <meta name="og:description" content="Web4-Tribune" />
 
     <link
       href="https://fonts.googleapis.com/css?family=Outfit:100,200,300,regular,500,600,700,800,900"
@@ -25,7 +25,7 @@
         nodeUrl: "https://rpc.testnet.near.org",
         walletUrl: "https://wallet.testnet.near.org",
       });
-      const wallet = new nearApi.WalletConnection(near, "web4-tribune");
+      const wallet = new nearApi.WalletConnection(near, "web4tribune");
       const account = wallet.getAccountId();
 
       window.addEventListener("load", function () {
@@ -45,7 +45,7 @@
                 text: document.getElementById("text").value,
               },
               deposit: 0,
-              gas: "20000000000000",
+              gas: "30000000000000",
               receiver_id: "%CONTRACT_ID%",
               meta: "",
               callback_url: "https://%CONTRACT_ID%.page",

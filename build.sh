@@ -5,5 +5,5 @@ cd "$(dirname $0)"
 
 RUSTFLAGS='-C link-arg=-s' cargo build --target wasm32-unknown-unknown --release
 mkdir -p ./res
-cp target/wasm32-unknown-unknown/release/tribune_web4.wasm ./res/
+cp target/wasm32-unknown-unknown/release/web4tribune.wasm ./res/
 
