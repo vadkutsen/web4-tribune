@@ -94,7 +94,7 @@ impl Contract {
         let mut post_html = "".to_string();
         for post in self.get_posts().iter().rev() {
             if let post = post {
-                post_html = format!("{}<div class='data'><p><strong>{}</strong></p><p>{}</p><p><i><small>by <span>{}</span> on <span>{}</span></small></i></p><div class='container'><div class='row'><div class='col-8'><input type='number' min='0.01' class='bg-light' placeholder='Amount in NEAR...'/></div><div class='col-4'><a href='#' class='nav-link'>Tip Author</a></div></div></div></div>", &post_html,
+                post_html = format!("{}<div class='data'><p><strong>{}</strong></p><p>{}</p><p><i><small>by <span>{}</span> on <span>{}</span></small></i></p><div class='container'><div class='row'><div class='col-8'><input type='number' min='0.01' class='bg-light' placeholder='Amount in NEAR...'/></div><div class='col-4'><a href='#' class='nav-link'>Tip the Author</a></div></div></div></div>", &post_html,
                     post.1.title,
                     post.1.text,
                     post.1.author,
