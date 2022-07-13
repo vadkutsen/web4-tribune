@@ -43,6 +43,33 @@
     <style>
       %STYLESHEET%
     </style>
+  </head>
+  <body>
+    <div class="add-post-form">
+      <div class="data">
+        <h2>Add new post</h2>
+        <div class="container">
+          <form id="new">
+            <p class="form-group">
+              <label for="title">Title*</label>
+              <input class="form-control form-control-lg" type="text" value="" id="title" required />
+            </p>
+            <p class="form-group">
+              <label for="text">Text*</label>
+              <textarea class="form-control form-control-lg" type="text" value="" id="text" required></textarea>
+            </p>
+            <div class="row justify-content-md-center">
+              <div class="col">
+                <button type="submit" id="submit" class="btn btn-primary mb-2">Add Post</button>
+              </div>
+              <div class="col text-center">
+                <a href="/">Cancel</a>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/near-api-js@0.41.0/dist/near-api-js.min.js"></script>
     <script>
       const CONTRACT_NAME = "%CONTRACT_ID%";
@@ -112,33 +139,5 @@
         });
       });
     </script>
-  </head>
-
-  <body>
-    <div class="add-post-form">
-      <div class="data">
-        <h2>Add new post</h2>
-        <div class="container">
-          <form id="new">
-            <p class="form-group">
-              <label for="title">Title*</label>
-              <input class="form-control form-control-lg" type="text" value="" id="title" required />
-            </p>
-            <p class="form-group">
-              <label for="text">Text*</label>
-              <textarea class="form-control form-control-lg" type="text" value="" id="text" required></textarea>
-            </p>
-            <div class="row justify-content-md-center">
-              <div class="col">
-                <button type="submit" id="submit" class="btn btn-primary mb-2">Add Post</button>
-              </div>
-              <div class="col text-center">
-                <a href="/">Cancel</a>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
   </body>
 </html>
