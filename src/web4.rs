@@ -107,6 +107,8 @@ impl Contract {
             include_str!("../res/index.html")
                 .replace("%STYLESHEET%", &STYLES_BODY)
                 .replace("%POSTS%", &post_html)
+                .replace("%CONTRACT_ID%", &env::current_account_id().to_string())
+                .replace("%NETWORK%", "testnet")
         )
 
     }

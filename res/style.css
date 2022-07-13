@@ -15,7 +15,6 @@
 
 html {
     font-family: 'Special Elite', cursive;
-    /* font-family: Avenir, Helvetica, Arial, sans-serif; */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -23,7 +22,9 @@ html {
 body {
     background: var(--oxford-blue);
     min-height: 100vh;
-    padding: 25px;
+}
+
+.main {
     display: grid;
     justify-content: center;
     align-items: center;
@@ -39,29 +40,6 @@ h2 {
     color: var(--white);
     font-size: 24px;
     padding-bottom: 5px;
-}
-
-.data tbody tr:nth-of-type(odd), .validators tbody tr:nth-of-type(odd) {
-    background-color: #2f415b;
-}
-
-.data td, .validators td, .data th, .validators th {
-    padding: 3px;
-    vertical-align: bottom;
-}
-
-.data th, .validators th {
-    font-weight: initial;
-    text-align: left;
-}
-
-.data td:first-child, .validators td:first-child, .data th:first-child, .validators th:first-child {
-    width: 100%;
-}
-
-.data td:last-child, .validators td:last-child {
-    font-family: monospace;
-    min-width: 115px;
 }
 
 .data {
@@ -91,13 +69,23 @@ h2 {
     padding-bottom:20px;
 }
 
-.add-post {
-    padding: 10px;
-    background-color: var(--blue-yonder)
+.data input {
+    background: var(--blue-yonder);
+}
+
+.data textarea {
+    background: var(--blue-yonder);
 }
 
 code {
     background-color: #eee;
     padding: 3px;
     color: var(--light-oxford-blue);
+}
+
+.add-post-form {
+    padding-top: 20px;
+    display: grid;
+    justify-content: center;
+    align-items: center;
 }

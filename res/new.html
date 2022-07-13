@@ -10,73 +10,134 @@
     <meta name="og:description" content="Web4-Tribune" />
 
     <link
-      href="https://fonts.googleapis.com/css?family=Outfit:100,200,300,regular,500,600,700,800,900"
       rel="stylesheet"
+      href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/highlight.js/latest/highlight.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/highlight.js/latest/styles/github.min.css"
     />
 
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+      integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
+      integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
+      crossorigin="anonymous"
+    ></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap"
+      rel="stylesheet"
+    />
     <style>
       %STYLESHEET%
     </style>
     <script src="https://cdn.jsdelivr.net/npm/near-api-js@0.41.0/dist/near-api-js.min.js"></script>
     <script>
+      const CONTRACT_NAME = "%CONTRACT_ID%";
+      function getConfig(env) {
+        switch (env) {
+          case "production":
+          case "mainnet":
+            return {
+              networkId: "mainnet",
+              nodeUrl: "https://rpc.mainnet.near.org",
+              contractName: CONTRACT_NAME,
+              walletUrl: "https://wallet.near.org",
+              helperUrl: "https://helper.mainnet.near.org",
+              explorerUrl: "https://explorer.mainnet.near.org",
+            };
+          case "development":
+          case "testnet":
+            return {
+              networkId: "testnet",
+              nodeUrl: "https://rpc.testnet.near.org",
+              contractName: CONTRACT_NAME,
+              walletUrl: "https://wallet.testnet.near.org",
+              helperUrl: "https://helper.testnet.near.org",
+              explorerUrl: "https://explorer.testnet.near.org",
+            };
+          default:
+            throw Error(
+              `Unconfigured environment '${env}'. Can be configured in src/config.js.`
+            );
+        }
+      }
+
+      const nearConfig = getConfig("%NETWORK%");
       const near = new nearApi.Near({
         keyStore: new nearApi.keyStores.BrowserLocalStorageKeyStore(),
-        networkId: "%NETWORK%",
-        nodeUrl: "https://rpc.testnet.near.org",
-        walletUrl: "https://wallet.testnet.near.org",
+        networkId: nearConfig.networkId,
+        nodeUrl: nearConfig.nodeUrl,
+        walletUrl: nearConfig.walletUrl,
       });
-      const wallet = new nearApi.WalletConnection(near, "web4tribune");
+
+      const wallet = new nearApi.WalletConnection(near, "%CONTRACT_ID%");
       const account = wallet.getAccountId();
+
+      const contract = new nearApi.Contract(wallet.account(), "%CONTRACT_ID%", {
+        viewMethods: ["get_posts", "get_post", "get_tips"], // view methods do not change state but usually return a value
+        changeMethods: ["add_post", "update_post", "tip_author", "withdraw_tips"], // change methods modify state
+        sender: wallet.account(), // account object to initialize and sign transactions.
+      });
 
       window.addEventListener("load", function () {
         const form = document.getElementById("new");
 
-        form.addEventListener("submit", function (event) {
+        form.addEventListener("submit", async function (event) {
           event.preventDefault();
-
-          fetch("https://rest.nearapi.org/sign_url", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              account_id: account,
-              method: "add_post",
-              params: {
-                title: document.getElementById("title").value,
-                text: document.getElementById("text").value,
-              },
-              deposit: 0,
-              gas: "30000000000000",
-              receiver_id: "%CONTRACT_ID%",
-              meta: "",
-              callback_url: "https://%CONTRACT_ID%.page",
-              network: "%NETWORK%",
-            }),
-          })
-            .then((resp) => resp.text())
-            .then((url) => {
-              console.log("Redirecting to: ", url);
-              window.location.replace(url);
-            });
+          document.getElementById("submit").disabled = true;
+          await contract.add_post({
+            /* callbackUrl: "https://%CONTRACT_ID%.page", // callbackUrl after the transaction approved (optional) */
+            /* meta: 'some info', // meta information NEAR Wallet will send back to the application. `meta` will be attached to the `callbackUrl` as a url search param */
+            args: {
+              title: document.getElementById("title").value,
+              text: document.getElementById("text").value,
+            },
+            /* gas: 300000000000000, // attached GAS (optional) */
+          });
+          document.getElementById("submit").disabled = false;
+          window.location.replace("/");
         });
       });
     </script>
   </head>
 
   <body>
-    <div class="data">
-      <h2>Add new post</h2>
-      <div style="text-align: initial">
-        <form id="new">
-          <p>
-            <label for="title">Title*:</label>
-            <input type="text" value="" id="title" />
-          </p>
-          <p>
-            <label for="text">Text*:</label>
-            <textarea type="text" value="" id="text"></textarea>
-          </p>
-          <input type="submit" style="padding: 10px" />
-        </form>
+    <div class="add-post-form">
+      <div class="data">
+        <h2>Add new post</h2>
+        <div class="container">
+          <form id="new">
+            <p class="form-group">
+              <label for="title">Title*</label>
+              <input class="form-control form-control-lg" type="text" value="" id="title" required />
+            </p>
+            <p class="form-group">
+              <label for="text">Text*</label>
+              <textarea class="form-control form-control-lg" type="text" value="" id="text" required></textarea>
+            </p>
+            <div class="row justify-content-md-center">
+              <div class="col">
+                <button type="submit" id="submit" class="btn btn-primary mb-2">Add Post</button>
+              </div>
+              <div class="col text-center">
+                <a href="/">Cancel</a>
+              </div>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </body>
