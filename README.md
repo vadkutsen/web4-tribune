@@ -6,4 +6,4 @@
     Any user can post anything and get rewarded with tips by other users.
 
     Live-demo: 
-    [https://web4tribune.testnet.page/](https://web4tribune.testnet.page/)
+    [web4tribune.testnet.page](https://web4tribune.testnet.page/)
