@@ -91,7 +91,6 @@
         changeMethods: ["add_post", "update_post", "tip_author", "withdraw_tips"], // change methods modify state
         sender: wallet.account(), // account object to initialize and sign transactions.
       });
-
       window.addEventListener("load", function () {
         const form = document.getElementById("new");
 
@@ -99,10 +98,10 @@
           event.preventDefault();
           document.getElementById("submit").disabled = true;
           document.getElementById("submit").innerText = "Processing...";
-          console.log(wallet.account());
+          console.log(contract);
           try {
             await contract.add_post({
-            /* callbackUrl: "https://%CONTRACT_ID%.page", // callbackUrl after the transaction approved (optional) */
+            callbackUrl: "https://%CONTRACT_ID%.page", // callbackUrl after the transaction approved (optional)
             /* meta: 'some info', // meta information NEAR Wallet will send back to the application. `meta` will be attached to the `callbackUrl` as a url search param */
             args: {
               title: document.getElementById("title").value,
