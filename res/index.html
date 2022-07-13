@@ -48,7 +48,7 @@
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-blue">
       <div class="container-fluid">
-        <a class="navbar-brand" href="/"><strong>WEB4 TRIBUNE</strong></a>
+        <a class="navbar-brand" href="/"><strong>WEB<span class="text-danger">4</span> TRIBUNE</strong></a>
 
         <button
           class="navbar-toggler bg-light"
@@ -64,6 +64,12 @@
 
         <div class="collapse navbar-collapse" id="navbarToggler">
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <span class="nav-link">Your tips: 0NEAR</span><span id="tips" class="nav-link"></span>
+            </li>
+            <li>
+              <a href="#" class="nav-link">Withdraw Tips</a>
+            </li>
             <li class="nav-item">
               <a href="/new" id="addPost" class="nav-link"></a>
             </li>
@@ -131,6 +137,12 @@
 
       const wallet = new nearApi.WalletConnection(near, "web4tribune");
       const account = wallet.getAccountId();
+      const contract = new nearApi.Contract(wallet.account(), "%CONTRACT_ID%", {
+        viewMethods: ["get_posts", "get_post", "get_tips"],
+        changeMethods: ["add_post", "update_post", "tip_author", "withdraw_tips"],
+        sender: wallet.account(), // account object to initialize and sign transactions.
+      });
+
 
       function logout() {
         wallet.signOut();
