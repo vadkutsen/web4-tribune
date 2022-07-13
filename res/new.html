@@ -43,33 +43,6 @@
     <style>
       %STYLESHEET%
     </style>
-  </head>
-  <body>
-    <div class="add-post-form">
-      <div class="data">
-        <h2>Add new post</h2>
-        <div class="container">
-          <form id="new">
-            <p class="form-group">
-              <label for="title">Title*</label>
-              <input class="form-control form-control-lg" type="text" value="" id="title" required />
-            </p>
-            <p class="form-group">
-              <label for="text">Text*</label>
-              <textarea class="form-control form-control-lg" type="text" value="" id="text" required></textarea>
-            </p>
-            <div class="row justify-content-md-center">
-              <div class="col">
-                <button type="submit" id="submit" class="btn btn-primary mb-2">Add Post</button>
-              </div>
-              <div class="col text-center">
-                <a href="/">Cancel</a>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
     <script src="https://cdn.jsdelivr.net/npm/near-api-js@0.41.0/dist/near-api-js.min.js"></script>
     <script>
       const CONTRACT_NAME = "%CONTRACT_ID%";
@@ -110,9 +83,9 @@
         walletUrl: nearConfig.walletUrl,
       });
 
-      const wallet = new nearApi.WalletConnection(near, "%CONTRACT_ID%");
+      const wallet = new nearApi.WalletConnection(near, "web4tribune");
       const account = wallet.getAccountId();
-
+      console.log("account: ", account);
       const contract = new nearApi.Contract(wallet.account(), "%CONTRACT_ID%", {
         viewMethods: ["get_posts", "get_post", "get_tips"], // view methods do not change state but usually return a value
         changeMethods: ["add_post", "update_post", "tip_author", "withdraw_tips"], // change methods modify state
@@ -125,7 +98,10 @@
         form.addEventListener("submit", async function (event) {
           event.preventDefault();
           document.getElementById("submit").disabled = true;
-          await contract.add_post({
+          document.getElementById("submit").innerText = "Processing...";
+          console.log(wallet.account());
+          try {
+            await contract.add_post({
             /* callbackUrl: "https://%CONTRACT_ID%.page", // callbackUrl after the transaction approved (optional) */
             /* meta: 'some info', // meta information NEAR Wallet will send back to the application. `meta` will be attached to the `callbackUrl` as a url search param */
             args: {
@@ -135,9 +111,43 @@
             /* gas: 300000000000000, // attached GAS (optional) */
           });
           document.getElementById("submit").disabled = false;
+          document.getElementById("submit").innerText = "Add Post";
           window.location.replace("/");
+          } catch (e) {
+            console.log(e);
+            alert(e.message);
+          }
+          document.getElementById("submit").disabled = false;
+          document.getElementById("submit").innerText = "Add Post";
         });
       });
     </script>
+  </head>
+  <body>
+    <div class="add-post-form">
+      <div class="data">
+        <h2>Add new post</h2>
+        <div class="container">
+          <form id="new">
+            <p class="form-group">
+              <label for="title">Title*</label>
+              <input class="form-control form-control-lg" type="text" value="" id="title" required />
+            </p>
+            <p class="form-group">
+              <label for="text">Text*</label>
+              <textarea class="form-control form-control-lg" type="text" value="" id="text" required></textarea>
+            </p>
+            <div class="row justify-content-md-center">
+              <div class="col">
+                <button type="submit" id="submit" class="btn btn-primary mb-2">Add Post</button>
+              </div>
+              <div class="col text-center">
+                <a href="/">Cancel</a>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
