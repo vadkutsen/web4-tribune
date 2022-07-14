@@ -72,7 +72,7 @@
               ><span id="tips" class="nav-link"></span>
             </li>
             <li>
-              <a href="#" class="nav-link">Withdraw Tips</a>
+              <a id="withdraw-tips" href="#" class="nav-link">Withdraw Tips</a>
             </li>
             <li class="nav-item">
               <a href="/new" id="addPost" class="nav-link"></a>
@@ -184,8 +184,11 @@
           addPost.innerText = "Add Post";
           try {
             const tips_amount = await contract.get_tips({ author_id: account });
-            const amountInNear = (tips_amount/1000000000000000000000000).toFixed(4);
-            document.getElementById("your-tips-amount").innerText = amountInNear;
+            const amountInNear = (
+              tips_amount / 1000000000000000000000000
+            ).toFixed(4);
+            document.getElementById("your-tips-amount").innerText =
+              amountInNear;
           } catch (e) {
             console.log(e);
           }
@@ -202,28 +205,47 @@
             const amount_id = "input-" + id;
             const authorId = document.getElementById(author_id).innerText;
             const amount = document.getElementById(amount_id).value;
-            const amountInYocto = window.nearApi.utils.format.parseNearAmount(amount);
+            const amountInYocto =
+              window.nearApi.utils.format.parseNearAmount(amount);
             document.getElementById(button_id).disabled = true;
             document.getElementById(button_id).innerText = "Pocessing...";
             try {
               if (amount > 0) {
-              await contract.tip_author({
-                args: {
-                  author_id: authorId,
-                },
-                gas: 300000000000000, // attached GAS (optional),
-                amount: amountInYocto,
-              });
-              document.getElementById(button_id).disabled = false;
-              document.getElementById(button_id).innerText = "Tip the Author";
+                await contract.tip_author({
+                  args: {
+                    author_id: authorId,
+                  },
+                  gas: 300000000000000, // attached GAS (optional),
+                  amount: amountInYocto,
+                });
               } else {
-              alert("Please enter the amount");
-            }
+                alert("Please enter the amount");
+              }
             } catch (e) {
               console.log(e);
             }
             document.getElementById(button_id).disabled = false;
             document.getElementById(button_id).innerText = "Tip the Author";
+          }
+        });
+
+      document
+        .getElementById("withdraw-tips")
+        .addEventListener("click", async function (e) {
+          if (
+            Number(document.getElementById("your-tips-amount").innerText) > 0
+          ) {
+            document.getElementById("withdraw-tips").disabled = true;
+            document.getElementById("withdraw-tips").innerText = "Pocessing...";
+            try {
+              await contract.withdraw_tips();
+              window.location.reload();
+            } catch (e) {
+              console.log(e);
+            }
+            document.getElementById("withdraw-tips").disabled = false;
+            document.getElementById("withdraw-tips").innerText =
+              "Withdraw Tips";
           }
         });
     </script>
