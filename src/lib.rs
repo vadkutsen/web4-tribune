@@ -120,3 +120,132 @@ impl Contract {
         self.tips.get(&author_id).unwrap_or(0)
     }
 }
+
+// Tests
+
+#[cfg(all(test, not(target_arch = "wasm32")))]
+mod tests {
+    use super::*;
+    use near_sdk::test_utils::VMContextBuilder;
+    use near_sdk::{testing_env, VMContext};
+
+    fn get_context(account: String, is_view: bool) -> VMContext {
+        VMContextBuilder::new()
+            .predecessor_account_id(account.parse().unwrap())
+            .attached_deposit(1_000_000_000_000_000_000_000)
+            .is_view(is_view)
+            .build()
+    }
+
+  #[test]
+  fn add_then_get_posts() {
+    let context = get_context("bob_near".to_string(), false);
+    testing_env!(context);
+    let mut contract = Contract::default();
+    let add = contract.add_post(
+      "title".to_string(),
+      "text".to_string(),
+    );
+    let posts = contract.get_posts();
+    assert!(add);
+    assert_eq!(1, posts.len());
+    let post = contract.get_post(0);
+    assert_eq!("title".to_string(), post.title);
+    assert_eq!("text".to_string(), post.text);
+    assert_eq!("bob_near".parse::<AccountId>().unwrap(), post.author);
+
+  }
+
+  #[test]
+  #[should_panic(expected="Title is reqired.")]
+  fn title_is_empty() {
+    let context = get_context("bob_near".to_string(), false);
+    testing_env!(context);
+    let mut contract = Contract::default();
+    contract.add_post(
+      "".to_string(),
+      "text".to_string(),
+    );
+  }
+
+  #[test]
+  #[should_panic(expected="Text is required.")]
+  fn text_is_empty() {
+    let context = get_context("bob_near".to_string(), false);
+    testing_env!(context);
+    let mut contract = Contract::default();
+    contract.add_post(
+      "title".to_string(),
+      "".to_string(),
+    );
+  }
+
+  #[test]
+  #[should_panic(expected="Only author can update the post.")]
+  fn cannot_update_if_not_an_author() {
+    let context = get_context("bob_near".to_string(), false);
+    testing_env!(context);
+    let mut contract = Contract::default();
+    contract.add_post(
+      "title".to_string(),
+      "text".to_string(),
+    );
+    let new_context = get_context("john_near".to_string(), false);
+    testing_env!(new_context);
+    contract.update_post(0, "new title".to_string(), "new text".to_string());
+  }
+
+  #[test]
+  fn update_and_get_post() {
+    let context = get_context("bob_near".to_string(), false);
+    testing_env!(context);
+    let mut contract = Contract::default();
+    contract.add_post(
+      "title".to_string(),
+      "text".to_string(),
+    );
+    let update = contract.update_post(0, "new title".to_string(), "new text".to_string());
+    assert!(update);
+    let posts = contract.get_posts();
+    assert_eq!(1, posts.len());
+    let post = contract.get_post(0);
+    assert_eq!("new title".to_string(), post.title);
+    assert_eq!("new text".to_string(), post.text);
+  }
+
+  #[test]
+  fn tip_author() {
+    let context = get_context("alice_near".to_string(), false);
+    testing_env!(context);
+    let mut contract = Contract::default();
+    assert_eq!(contract.get_tips("bob_near".parse().unwrap()), 0);
+    let tip = contract.tip_author("bob_near".parse().unwrap());
+    assert!(tip);
+    assert_eq!(contract.get_tips("bob_near".parse().unwrap()), 1_000_000_000_000_000_000_000);
+  }
+
+  #[test]
+  fn withraw_tips() {
+    let context = get_context("bob_near".to_string(), false);
+    testing_env!(context);
+    let mut contract = Contract::default();
+    let tip = contract.tip_author("sam_near".parse().unwrap());
+    assert!(tip);
+    assert_eq!(contract.get_tips("sam_near".parse().unwrap()), 1_000_000_000_000_000_000_000);
+    let new_context = get_context("sam_near".to_string(), false);
+    testing_env!(new_context);
+    contract.withdraw_tips();
+    assert_eq!(contract.get_tips("sam_near".parse().unwrap()), 0);
+  }
+
+  #[test]
+  #[should_panic(expected="Withdrowal amount should be greater than 0")]
+  fn cannot_withraw_0() {
+    let context = get_context("bob_near".to_string(), false);
+    testing_env!(context);
+    let mut contract = Contract::default();
+    assert_eq!(contract.get_tips("bob_near".parse().unwrap()), 0);
+    contract.withdraw_tips();
+  }
+}
+
