@@ -171,12 +171,14 @@
         const login = document.getElementById("login");
         const address = document.getElementById("address");
         const addPost = document.getElementById("addPost");
+        const withdraw = document.getElementById("withdraw-tips");
 
         if (account == "") {
           login.onclick = window.login;
           address.innerText = "";
           address.href = "#";
           addPost.innerText = "";
+          withdraw.innerText = "";
         } else {
           login.onclick = window.logout;
           login.innerText = "Logout";
@@ -201,14 +203,15 @@
           if (e.target && e.target.nodeName == "BUTTON") {
             const id = e.target.id.split("-")[1];
             const button_id = e.target.id;
+            const button = document.getElementById(button_id);
             const author_id = "authorid-" + id;
             const amount_id = "input-" + id;
             const authorId = document.getElementById(author_id).innerText;
             const amount = document.getElementById(amount_id).value;
             const amountInYocto =
               window.nearApi.utils.format.parseNearAmount(amount);
-            document.getElementById(button_id).disabled = true;
-            document.getElementById(button_id).innerText = "Pocessing...";
+            button.disabled = true;
+            button.innerText = "Pocessing...";
             try {
               if (amount > 0) {
                 await contract.tip_author({
@@ -224,27 +227,28 @@
             } catch (e) {
               console.log(e);
             }
-            document.getElementById(button_id).disabled = false;
-            document.getElementById(button_id).innerText = "Tip the Author";
+            button.disabled = false;
+            button.innerText = "Tip the Author";
           }
         });
 
       document
         .getElementById("withdraw-tips")
         .addEventListener("click", async function (e) {
+          const withdraw = document.getElementById("withdraw-tips");
           if (
             Number(document.getElementById("your-tips-amount").innerText) > 0
           ) {
-            document.getElementById("withdraw-tips").disabled = true;
-            document.getElementById("withdraw-tips").innerText = "Pocessing...";
+            withdraw.disabled = true;
+            withdraw.innerText = "Pocessing...";
             try {
               await contract.withdraw_tips();
               window.location.reload();
             } catch (e) {
               console.log(e);
             }
-            document.getElementById("withdraw-tips").disabled = false;
-            document.getElementById("withdraw-tips").innerText =
+            withdraw.disabled = false;
+            withdraw.innerText =
               "Withdraw Tips";
           }
         });
