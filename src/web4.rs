@@ -90,15 +90,18 @@ impl Contract {
                     .replace("%NETWORK%", "testnet")
             );
         }
-
         let mut post_html = "".to_string();
         for post in self.get_posts().iter().rev() {
+            let tipping_html = format!("<div class='container'><div class='row'><div class='col-8'><input id='input-{}' type='number' min='0.01' class='bg-light' placeholder='Amount in NEAR...'/></div><div class='col-4'><button id='button-{}' type='button' class='btn btn-primary btn-small'>Tip the Author</button></div></div></div>", post.0, post.0);
+        
             if let post = post {
-                post_html = format!("{}<div class='data'><p><strong>{}</strong></p><p>{}</p><p><i><small>by <span>{}</span> on <span>{}</span></small></i></p><div class='container'><div class='row'><div class='col-8'><input type='number' min='0.01' class='bg-light' placeholder='Amount in NEAR...'/></div><div class='col-4'><button type='button' class='btn btn-primary btn-small'>Tip the Author</button></div></div></div></div>", &post_html,
+                post_html = format!("{}<div class='data'><p><strong>{}</strong></p><p>{}</p><p><i><small>by <span id='authorid-{}'>{}</span> on <span>{}</span></small></i></p>{}</div>", &post_html,
                     post.1.title,
                     post.1.text,
+                    post.0,
                     post.1.author,
                     NaiveDateTime::from_timestamp(post.1.created_at as i64/1000000000, 0),
+                    tipping_html
                 );
             }
         };

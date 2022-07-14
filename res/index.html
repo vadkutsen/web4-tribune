@@ -48,7 +48,9 @@
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-blue">
       <div class="container-fluid">
-        <a class="navbar-brand" href="/"><strong>WEB<span class="text-danger">4</span> TRIBUNE</strong></a>
+        <a class="navbar-brand" href="/"
+          ><strong>WEB<span class="text-danger">4</span> TRIBUNE</strong></a
+        >
 
         <button
           class="navbar-toggler bg-light"
@@ -65,7 +67,9 @@
         <div class="collapse navbar-collapse" id="navbarToggler">
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
             <li class="nav-item">
-              <span class="nav-link">Your tips: 0NEAR</span><span id="tips" class="nav-link"></span>
+              <span class="nav-link"
+                >Your tips: <span id="your-tips-amount">0</span>NEAR</span
+              ><span id="tips" class="nav-link"></span>
             </li>
             <li>
               <a href="#" class="nav-link">Withdraw Tips</a>
@@ -93,7 +97,7 @@
         </h3>
       </div>
       <h1>Latest Posts</h1>
-      %POSTS%
+      <div class="posts" id="posts">%POSTS%</div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/near-api-js@0.41.0/dist/near-api-js.min.js"></script>
     <script>
@@ -139,10 +143,14 @@
       const account = wallet.getAccountId();
       const contract = new nearApi.Contract(wallet.account(), "%CONTRACT_ID%", {
         viewMethods: ["get_posts", "get_post", "get_tips"],
-        changeMethods: ["add_post", "update_post", "tip_author", "withdraw_tips"],
+        changeMethods: [
+          "add_post",
+          "update_post",
+          "tip_author",
+          "withdraw_tips",
+        ],
         sender: wallet.account(), // account object to initialize and sign transactions.
       });
-
 
       function logout() {
         wallet.signOut();
@@ -159,7 +167,7 @@
       window.login = login;
       window.logout = logout;
 
-      window.addEventListener("load", function () {
+      window.addEventListener("load", async function () {
         const login = document.getElementById("login");
         const address = document.getElementById("address");
         const addPost = document.getElementById("addPost");
@@ -174,8 +182,50 @@
           login.innerText = "Logout";
           address.innerText = account;
           addPost.innerText = "Add Post";
+          try {
+            const tips_amount = await contract.get_tips({ author_id: account });
+            const amountInNear = (tips_amount/1000000000000000000000000).toFixed(4);
+            document.getElementById("your-tips-amount").innerText = amountInNear;
+          } catch (e) {
+            console.log(e);
+          }
         }
       });
+
+      document
+        .getElementById("posts")
+        .addEventListener("click", async function (e) {
+          if (e.target && e.target.nodeName == "BUTTON") {
+            const id = e.target.id.split("-")[1];
+            const button_id = e.target.id;
+            const author_id = "authorid-" + id;
+            const amount_id = "input-" + id;
+            const authorId = document.getElementById(author_id).innerText;
+            const amount = document.getElementById(amount_id).value;
+            const amountInYocto = window.nearApi.utils.format.parseNearAmount(amount);
+            document.getElementById(button_id).disabled = true;
+            document.getElementById(button_id).innerText = "Pocessing...";
+            try {
+              if (amount > 0) {
+              await contract.tip_author({
+                args: {
+                  author_id: authorId,
+                },
+                gas: 300000000000000, // attached GAS (optional),
+                amount: amountInYocto,
+              });
+              document.getElementById(button_id).disabled = false;
+              document.getElementById(button_id).innerText = "Tip the Author";
+              } else {
+              alert("Please enter the amount");
+            }
+            } catch (e) {
+              console.log(e);
+            }
+            document.getElementById(button_id).disabled = false;
+            document.getElementById(button_id).innerText = "Tip the Author";
+          }
+        });
     </script>
   </body>
 </html>
