@@ -7,3 +7,6 @@
 
     Live-demo: 
     Please visit [web4tribune.testnet.page](https://web4tribune.testnet.page).
+
+    To build the contract run ```./build.sh``` command.
+    To deploy the contract run ```near deploy --accountId <YOUR_CONTRACT_ACCOUNT> --wasmFile res/web4tribune.wasm``` command.
