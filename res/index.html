@@ -67,9 +67,8 @@
         <div class="collapse navbar-collapse" id="navbarToggler">
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
             <li class="nav-item">
-              <span class="nav-link"
-                >Your tips: <span id="your-tips-amount">0</span>NEAR</span
-              ><span id="tips" class="nav-link"></span>
+              <span class="nav-link">Your tips: <span id="your-tips-amount">0</span>NEAR</span>
+              <span id="tips" class="nav-link"></span>
             </li>
             <li>
               <a id="withdraw-tips" href="#" class="nav-link">Withdraw Tips</a>
@@ -172,6 +171,7 @@
         const address = document.getElementById("address");
         const addPost = document.getElementById("addPost");
         const withdraw = document.getElementById("withdraw-tips");
+        const tipSection = document.getElementById("tip-section");
 
         if (account == "") {
           login.onclick = window.login;
@@ -179,6 +179,7 @@
           address.href = "#";
           addPost.innerText = "";
           withdraw.innerText = "";
+          tipSection.style.display === "none";
         } else {
           login.onclick = window.logout;
           login.innerText = "Logout";
