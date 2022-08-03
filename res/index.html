@@ -171,7 +171,7 @@
         const address = document.getElementById("address");
         const addPost = document.getElementById("addPost");
         const withdraw = document.getElementById("withdraw-tips");
-        const tipSection = document.getElementById("tip-section");
+        const tipSections = document.getElementsByClassName("tip-section");
 
         if (account == "") {
           login.onclick = window.login;
@@ -179,7 +179,9 @@
           address.href = "#";
           addPost.innerText = "";
           withdraw.innerText = "";
-          tipSection.style.display === "none";
+          for (const section of tipSections) {
+            section.style.display = "none";
+          }
         } else {
           login.onclick = window.logout;
           login.innerText = "Logout";
